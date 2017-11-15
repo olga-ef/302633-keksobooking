@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Ольга Ефимова](https://up.htmlacademy.ru/javascript/11/user/302633).
-* Наставник: `Неизвестно`.
+* Наставник: [Ренат Туктаров](https://up.htmlacademy.ru/javascript/11/user/408799).
 
 ---
 
