@@ -58,14 +58,17 @@ var getRandomArray = function (array) {
 
 var ads = [];
 for (var i = 0; i < 8; i++) {
-
+  var loc = {
+    'x': getRandomInRange(300, 900) - 10,
+    'y': getRandomInRange(100, 500)
+  };
   var newObject = {
     'author': {
       'avatar': 'img/avatars/user' + getRandomElement(imageNumbers) + '.png'
     },
     'offer': {
       'title': getRandomElement(titles),
-      'address': location.x + ', ' + location.y,
+      'address': loc.x + ', ' + loc.y,
       'price': getRandomInRange(1000, 1000000),
       'type': housesTypes[getRandomIndex(housesTypes)],
       'rooms': getRandomInRange(1, 5),
@@ -76,10 +79,7 @@ for (var i = 0; i < 8; i++) {
       'description': '',
       'photos': []
     },
-    'location': {
-      'x': getRandomInRange(300, 900) - 10,
-      'y': getRandomInRange(100, 500)
-    }
+    'location': loc
   };
   ads.push(newObject);
 }
@@ -111,8 +111,8 @@ var renderMapCard = function () {
   var cardElement = mapCardTemplate.cloneNode(true);
 
   cardElement.querySelector('h3').textContent = ads[0].offer.title;
-  cardElement.querySelector('p small').textContent = ads[0].address;
-  cardElement.querySelector('.popup__price').textContent = ads[0].offer.price + ' &#x20bd;/ночь';
+  cardElement.querySelector('p small').textContent = ads[0].offer.address;
+  cardElement.querySelector('.popup__price').textContent = ads[0].offer.price + ' \u20bd/ночь';
 
   if (ads[0].offer.type === 'flat') {
     cardElement.querySelector('h4').textContent = 'Квартира';
@@ -138,7 +138,6 @@ var renderMapCard = function () {
     features[i].classList.remove(features[i].classList[1]);
     features[i].classList.add('feature--' + ads[0].offer.features[i]);
   }
-
   return cardElement;
 };
 
