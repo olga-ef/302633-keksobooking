@@ -141,8 +141,6 @@ var renderMapCard = function (object) {
 };
 
 map.insertBefore(renderMapCard(ads[0]), mapFiltersContainer);
-inputsDisable();
-closePopup();
 
 var mainPin = document.querySelector('.map__pin--main');
 var noticeForm = document.querySelector('.notice__form');
@@ -259,5 +257,7 @@ var onPinClick = function () {
   openPopup();
 };
 
+inputsDisable();
+closePopup();
 mainPin.addEventListener('mouseup', onMainPinMouseup);
 mapPinsContainer.addEventListener('click', onPinClick);
