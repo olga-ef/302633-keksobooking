@@ -1,9 +1,12 @@
 'use strict';
 
+var ESK_KEYCODE = 27;
+
 var map = document.querySelector('.map');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var mapPinsContainer = document.querySelector('.map__pins');
 var mapCardTemplate = document.querySelector('template').content.querySelector('article.map__card');
+var mapFiltersContainer = map.querySelector('.map__filters-container');
 
 var imageNumbers = ['01', '02', '03', '04', '05', '06', '07', '08'];
 var titles = [
@@ -84,8 +87,6 @@ for (var i = 0; i < 8; i++) {
   ads.push(newObject);
 }
 
-map.classList.remove('map--faded');
-
 // метки на карте
 
 var renderMapPin = function (object) {
@@ -103,42 +104,160 @@ for (i = 0; i < ads.length; i++) {
   fragment.appendChild(renderMapPin(ads[i]));
 }
 
-mapPinsContainer.appendChild(fragment);
-
 // карточка
 
-var renderMapCard = function () {
+var renderMapCard = function (object) {
   var cardElement = mapCardTemplate.cloneNode(true);
 
-  cardElement.querySelector('h3').textContent = ads[0].offer.title;
-  cardElement.querySelector('p small').textContent = ads[0].offer.address;
-  cardElement.querySelector('.popup__price').textContent = ads[0].offer.price + ' \u20bd/ночь';
+  cardElement.querySelector('h3').textContent = object.offer.title;
+  cardElement.querySelector('p small').textContent = object.offer.address;
+  cardElement.querySelector('.popup__price').textContent = object.offer.price + ' \u20bd/ночь';
 
-  if (ads[0].offer.type === 'flat') {
+  if (object.offer.type === 'flat') {
     cardElement.querySelector('h4').textContent = 'Квартира';
   }
-  if (ads[0].offer.type === 'bungalo') {
+  if (object.offer.type === 'bungalo') {
     cardElement.querySelector('h4').textContent = 'Бунгало';
   } else {
     cardElement.querySelector('h4').textContent = 'Дом';
   }
 
-  cardElement.querySelectorAll('p')[2].textContent = ads[0].offer.rooms + ' комнаты для ' + ads[0].offer.guests + ' гостей';
-  cardElement.querySelectorAll('p')[3].textContent = 'Заезд после ' + ads[0].offer.checkin + ', выезд до ' + ads[0].offer.checkout;
-  cardElement.querySelectorAll('p')[4].textContent = ads[0].offer.description;
-  cardElement.querySelector('.popup__avatar').src = ads[0].author.avatar;
+  cardElement.querySelectorAll('p')[2].textContent = object.offer.rooms + ' комнаты для ' + object.offer.guests + ' гостей';
+  cardElement.querySelectorAll('p')[3].textContent = 'Заезд после ' + object.offer.checkin + ', выезд до ' + object.offer.checkout;
+  cardElement.querySelectorAll('p')[4].textContent = object.offer.description;
+  cardElement.querySelector('.popup__avatar').src = object.author.avatar;
 
   var featuresList = cardElement.querySelector('.popup__features');
   var features = cardElement.querySelector('.popup__features').querySelectorAll('.feature');
   for (i = 0; i < features.length; i++) {
     featuresList.removeChild(features[i]);
   }
-  for (i = 0; i < ads[0].offer.features.length; i++) {
+  for (i = 0; i < object.offer.features.length; i++) {
     featuresList.appendChild(features[i]);
     features[i].classList.remove(features[i].classList[1]);
-    features[i].classList.add('feature--' + ads[0].offer.features[i]);
+    features[i].classList.add('feature--' + object.offer.features[i]);
   }
   return cardElement;
 };
 
-map.appendChild(renderMapCard());
+map.insertBefore(renderMapCard(ads[0]), mapFiltersContainer);
+
+var mainPin = document.querySelector('.map__pin--main');
+var noticeForm = document.querySelector('.notice__form');
+var noticeFormFieldsets = noticeForm.querySelectorAll('fieldset');
+var popup = map.querySelector('.popup');
+var pinsList = fragment.querySelectorAll('.map__pin');
+
+var removeFade = function () {
+  map.classList.remove('map--faded');
+};
+
+var addMapPins = function () {
+  mapPinsContainer.appendChild(fragment);
+};
+
+var formEnable = function () {
+  noticeForm.classList.remove('notice__form--disabled');
+};
+
+var inputsEnable = function () {
+  for (i = 0; i < noticeFormFieldsets.length; i++) {
+    noticeFormFieldsets[i].disabled = false;
+  }
+};
+
+var inputsDisable = function () {
+  for (i = 0; i < noticeFormFieldsets.length; i++) {
+    noticeFormFieldsets[i].disabled = true;
+  }
+};
+
+var closePopup = function () {
+  popup.classList.add('hidden');
+  document.removeEventListener('keydown', onPopupEskPress);
+};
+
+var deactivatePin = function () {
+  var target = event.target;
+  var btn = target.closest('button');
+  if (!btn) {
+    return;
+  }
+  for (i = 0; i < pinsList.length; i++) {
+    if (mainPin.classList.contains('map__pin--active')) {
+      mainPin.classList.remove('map__pin--active');
+    }
+    if (pinsList[i].classList.contains('map__pin--active')) {
+      pinsList[i].classList.remove('map__pin--active');
+    }
+  }
+};
+
+var activatePin = function () {
+  var target = event.target;
+  var btn = target.closest('button');
+  if (!btn) {
+    return;
+  }
+  if (!mapPinsContainer.contains(btn)) {
+    return;
+  }
+  btn.classList.add('map__pin--active');
+};
+
+var openPopup = function () {
+  var target = event.target;
+  var btn = target.closest('button');
+  if (!btn) {
+    return;
+  }
+  if (!mapPinsContainer.contains(btn)) {
+    return;
+  }
+  if (btn === mainPin) {
+    return;
+  }
+
+  for (i = 0; i < pinsList.length; i++) {
+    if (btn === pinsList[i]) {
+      map.removeChild(popup);
+      var newCard = map.insertBefore(renderMapCard(ads[i]), mapFiltersContainer);
+      popup = newCard;
+      var popupClose = popup.querySelector('.popup__close');
+      popup.classList.remove('hidden');
+      popupClose.addEventListener('click', onPopupCloseClick);
+      document.addEventListener('keydown', onPopupEskPress);
+      return;
+    }
+  }
+};
+
+var onMainPinMouseup = function () {
+  removeFade();
+  addMapPins();
+  formEnable();
+  inputsEnable();
+};
+
+var onPopupEskPress = function (event) {
+  if (event.keyCode === ESK_KEYCODE) {
+    closePopup();
+    deactivatePin();
+  }
+};
+
+var onPopupCloseClick = function () {
+  closePopup();
+  deactivatePin();
+};
+
+var onPinClick = function () {
+  deactivatePin();
+  activatePin();
+  openPopup();
+};
+
+inputsDisable();
+closePopup();
+mainPin.addEventListener('mouseup', onMainPinMouseup);
+mapPinsContainer.addEventListener('click', onPinClick);
