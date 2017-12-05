@@ -1,6 +1,6 @@
 'use strict';
 
-var ESK_KEYCODE = 27;
+var ESC_KEYCODE = 27;
 
 var map = document.querySelector('.map');
 var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
@@ -160,41 +160,31 @@ var formEnable = function () {
   noticeForm.classList.remove('notice__form--disabled');
 };
 
-var inputsEnable = function () {
+var inputsDisable = function (operator) {
   for (i = 0; i < noticeFormFieldsets.length; i++) {
-    noticeFormFieldsets[i].disabled = false;
-  }
-};
-
-var inputsDisable = function () {
-  for (i = 0; i < noticeFormFieldsets.length; i++) {
-    noticeFormFieldsets[i].disabled = true;
+    noticeFormFieldsets[i].disabled = operator;
   }
 };
 
 var closePopup = function () {
   popup.classList.add('hidden');
-  document.removeEventListener('keydown', onPopupEskPress);
+  document.removeEventListener('keydown', onPopupEscPress);
 };
 
-var deactivatePin = function () {
-  var target = event.target;
+var deactivatePin = function (evt) {
+  var target = evt.target;
   var btn = target.closest('button');
   if (!btn) {
     return;
   }
   for (i = 0; i < pinsList.length; i++) {
-    if (mainPin.classList.contains('map__pin--active')) {
-      mainPin.classList.remove('map__pin--active');
-    }
-    if (pinsList[i].classList.contains('map__pin--active')) {
-      pinsList[i].classList.remove('map__pin--active');
-    }
+    mainPin.classList.remove('map__pin--active');
+    pinsList[i].classList.remove('map__pin--active');
   }
 };
 
-var activatePin = function () {
-  var target = event.target;
+var activatePin = function (evt) {
+  var target = evt.target;
   var btn = target.closest('button');
   if (!btn) {
     return;
@@ -205,8 +195,8 @@ var activatePin = function () {
   btn.classList.add('map__pin--active');
 };
 
-var openPopup = function () {
-  var target = event.target;
+var openPopup = function (evt) {
+  var target = evt.target;
   var btn = target.closest('button');
   if (!btn) {
     return;
@@ -226,7 +216,7 @@ var openPopup = function () {
       var popupClose = popup.querySelector('.popup__close');
       popup.classList.remove('hidden');
       popupClose.addEventListener('click', onPopupCloseClick);
-      document.addEventListener('keydown', onPopupEskPress);
+      document.addEventListener('keydown', onPopupEscPress);
       return;
     }
   }
@@ -236,28 +226,136 @@ var onMainPinMouseup = function () {
   removeFade();
   addMapPins();
   formEnable();
-  inputsEnable();
+  inputsDisable(false);
 };
 
-var onPopupEskPress = function (event) {
-  if (event.keyCode === ESK_KEYCODE) {
+var onPopupEscPress = function () {
+  if (event.keyCode === ESC_KEYCODE) {
     closePopup();
-    deactivatePin();
+    deactivatePin(event);
   }
 };
 
 var onPopupCloseClick = function () {
   closePopup();
-  deactivatePin();
+  deactivatePin(event);
 };
 
 var onPinClick = function () {
-  deactivatePin();
-  activatePin();
-  openPopup();
+  deactivatePin(event);
+  activatePin(event);
+  openPopup(event);
 };
 
-inputsDisable();
-closePopup();
+inputsDisable(true);
+closePopup(event);
 mainPin.addEventListener('mouseup', onMainPinMouseup);
 mapPinsContainer.addEventListener('click', onPinClick);
+
+// форма въезда/выезда
+var timeIn = noticeForm.querySelector('#timein');
+var timeOut = noticeForm.querySelector('#timeout');
+
+var selectTime = function (input1, input2) {
+  for (i = 0; i < input1.options.length; i++) {
+    var option = input1.options[i];
+    if (option.selected) {
+      input2.options[i].selected = true;
+    }
+  }
+};
+
+var OnTimeInChange = function () {
+  selectTime(timeIn, timeOut);
+};
+
+var onTimeOutChange = function () {
+  selectTime(timeOut, timeIn);
+};
+
+timeIn.addEventListener('change', OnTimeInChange);
+timeOut.addEventListener('change', onTimeOutChange);
+
+// Тип жилья/цена
+var houseType = noticeForm.querySelector('#type');
+var price = noticeForm.querySelector('#price');
+
+var getMinPrice = function () {
+  if (houseType.value === 'flat') {
+    price.min = 1000;
+  } else if (houseType.value === 'house') {
+    price.min = 5000;
+  } else if (houseType.value === 'palace') {
+    price.min = 10000;
+  } else if (houseType.value === 'bungalo') {
+    price.min = 0;
+  }
+};
+
+var OnHouseTypeChange = function () {
+  getMinPrice();
+};
+
+houseType.addEventListener('change', OnHouseTypeChange);
+
+// комнаты/гости
+
+var roomNumber = noticeForm.querySelector('#room_number');
+var capacity = noticeForm.querySelector('#capacity');
+
+var getCapacity = function () {
+  var option = roomNumber.options[roomNumber.selectedIndex];
+  if (option.value === '1') {
+    capacity.options[0].disabled = true;
+    capacity.options[1].disabled = true;
+    capacity.options[3].disabled = true;
+    capacity.options[2].selected = true;
+    capacity.options[2].disabled = false;
+  } else if (option.value === '2') {
+    capacity.options[0].disabled = true;
+    capacity.options[1].disabled = false;
+    capacity.options[3].disabled = true;
+    capacity.options[2].selected = true;
+    capacity.options[2].disabled = false;
+  } else if (option.value === '3') {
+    capacity.options[0].disabled = false;
+    capacity.options[1].disabled = false;
+    capacity.options[3].disabled = true;
+    capacity.options[2].selected = true;
+    capacity.options[2].disabled = false;
+  } else if (option.value === '100') {
+    capacity.options[0].disabled = true;
+    capacity.options[1].disabled = true;
+    capacity.options[3].disabled = false;
+    capacity.options[3].selected = true;
+    capacity.options[2].disabled = true;
+  }
+};
+
+var onRoomNumberChange = function () {
+  getCapacity();
+};
+
+roomNumber.addEventListener('change', onRoomNumberChange);
+getCapacity();
+
+// валидация
+var submit = noticeForm.querySelector('.form__submit');
+var inputs = noticeForm.querySelectorAll('input');
+
+var checkValidity = function () {
+  for (i = 0; i < inputs.length; i++) {
+    var input = inputs[i];
+    if (input.checkValidity() === false) {
+      input.style.borderColor = '#fa9';
+    } else {
+      input.style.borderColor = '#d9d9d3';
+    }
+  }
+};
+
+var onSubmitClick = function () {
+  checkValidity();
+};
+
+submit.addEventListener('click', onSubmitClick);
