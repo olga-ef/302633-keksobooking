@@ -270,16 +270,15 @@ var OnTimeInChange = function () {
 };
 
 var onTimeOutChange = function () {
-  selectTime(timeOut, timeIn)
-}
+  selectTime(timeOut, timeIn);
+};
 
 timeIn.addEventListener('change', OnTimeInChange);
 timeOut.addEventListener('change', onTimeOutChange);
 
-
 // Тип жилья/цена
 var houseType = noticeForm.querySelector('#type');
-var price = noticeForm.querySelector('#price')
+var price = noticeForm.querySelector('#price');
 
 var getMinPrice = function () {
   if (houseType.value === 'flat') {
@@ -306,25 +305,25 @@ var capacity = noticeForm.querySelector('#capacity');
 
 var getCapacity = function () {
   var option = roomNumber.options[roomNumber.selectedIndex];
-  if (option.value == 1) {
+  if (option.value === '1') {
     capacity.options[0].disabled = true;
     capacity.options[1].disabled = true;
     capacity.options[3].disabled = true;
     capacity.options[2].selected = true;
     capacity.options[2].disabled = false;
-  } else if (option.value == 2)  {
+  } else if (option.value === '2') {
     capacity.options[0].disabled = true;
     capacity.options[1].disabled = false;
     capacity.options[3].disabled = true;
     capacity.options[2].selected = true;
     capacity.options[2].disabled = false;
-  } else if (option.value == 3)  {
+  } else if (option.value === '3') {
     capacity.options[0].disabled = false;
     capacity.options[1].disabled = false;
     capacity.options[3].disabled = true;
     capacity.options[2].selected = true;
     capacity.options[2].disabled = false;
-  } else if (option.value == 100)  {
+  } else if (option.value === '100') {
     capacity.options[0].disabled = true;
     capacity.options[1].disabled = true;
     capacity.options[3].disabled = false;
@@ -333,7 +332,6 @@ var getCapacity = function () {
   }
 };
 
-
 var onRoomNumberChange = function () {
   getCapacity();
 };
@@ -341,25 +339,22 @@ var onRoomNumberChange = function () {
 roomNumber.addEventListener('change', onRoomNumberChange);
 getCapacity();
 
-
-
 // валидация
 var submit = noticeForm.querySelector('.form__submit');
-var inputs = noticeForm.querySelectorAll('input')
+var inputs = noticeForm.querySelectorAll('input');
 
-var checkValidity = function() {
+var checkValidity = function () {
   for (i = 0; i < inputs.length; i++) {
     var input = inputs[i];
     if (input.checkValidity() === false) {
       input.style.borderColor = '#fa9';
-      console.log(input);
     } else {
       input.style.borderColor = '#d9d9d3';
     }
   }
-}
+};
 
-var onSubmitClick = function() {
+var onSubmitClick = function () {
   checkValidity();
 };
 
