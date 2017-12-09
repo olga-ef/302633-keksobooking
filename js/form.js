@@ -94,9 +94,7 @@
     }
   };
 
-  var onRoomNumberChange = function () {
-    getCapacity();
-  };
+  var onRoomNumberChange = getCapacity;
 
   roomNumber.addEventListener('change', onRoomNumberChange);
   getCapacity();

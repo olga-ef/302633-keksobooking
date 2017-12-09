@@ -111,4 +111,58 @@
   closePopup(event);
   mainPin.addEventListener('mouseup', onMainPinMouseup);
   mapPinsContainer.addEventListener('click', onPinClick);
+
+  // Перетаскивание метки
+
+  var getStartCoords = function (evt) {
+    return {
+      x: evt.pageX,
+      y: evt.pageY
+    };
+  };
+
+  var getMainPinPosition = function (moveEvt, coords) {
+    var shift = {
+      x: coords.x - moveEvt.pageX,
+      y: coords.y - moveEvt.pageY
+    };
+
+    var newPosition = {
+      x: mainPin.offsetLeft - shift.x,
+      y: mainPin.offsetTop - shift.y
+    };
+
+    if (newPosition.y < 100) {
+      newPosition.y = 100;
+    } else if (newPosition.y > 500) {
+      newPosition.y = 500;
+    }
+    mainPin.style.top = newPosition.y + 'px';
+    mainPin.style.left = newPosition.x + 'px';
+
+    var address = document.querySelector('#address');
+    address.value = newPosition.x + ', ' + newPosition.y;
+  };
+
+  var onMainPinMousedown = function (evt) {
+    evt.preventDefault();
+    var startCoords = getStartCoords(event);
+
+    var onMouseMove = function (moveEvt) {
+      moveEvt.preventDefault();
+      getMainPinPosition(event, startCoords);
+      startCoords = getStartCoords(event);
+    };
+
+    var onMouseUp = function (upEvt) {
+      upEvt.preventDefault();
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseUp', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  };
+
+  mainPin.addEventListener('mousedown', onMainPinMousedown);
 })();
