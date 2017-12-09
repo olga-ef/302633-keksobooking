@@ -15,9 +15,10 @@
   var housesTypes = ['flat', 'house', 'bungalo'];
   var times = ['12:00', '13:00', '14:00'];
   var housesFeatures = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
+  var objectsCount = titles.length;
 
   window.ads = [];
-  for (var i = 0; i < 8; i++) {
+  for (var i = 0; i < objectsCount; i++) {
     var loc = {
       'x': window.random.getRandomInRange(300, 900) - 10,
       'y': window.random.getRandomInRange(100, 500)
