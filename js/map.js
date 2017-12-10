@@ -127,7 +127,6 @@
       x: coords.x - moveEvt.pageX,
       y: coords.y - moveEvt.pageY
     };
-
     var pinHeight = 62;
     var pickHeight = 16;
 
