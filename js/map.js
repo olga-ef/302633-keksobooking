@@ -114,7 +114,17 @@
 
   // Перетаскивание метки
 
+  var getCoords = function (elem) {
+    var box = elem.getBoundingClientRect();
+
+    return {
+      top: box.top,
+      left: box.left - pageXOffset
+    };
+  };
+
   var getStartCoords = function (evt) {
+
     return {
       x: evt.pageX,
       y: evt.pageY
@@ -127,15 +137,32 @@
       y: coords.y - moveEvt.pageY
     };
 
-    var newPosition = {
-      x: mainPin.offsetLeft - shift.x,
-      y: mainPin.offsetTop - shift.y
+    var pinHeight = 84;
+    var pinWidth = 62;
+
+    var pickCoords = {
+      x: getCoords(mainPin).left + pinWidth / 2,
+      y: getCoords(mainPin).top + pinHeight
     };
 
+    var pickShift = {
+      x: moveEvt.pageX - pickCoords.x,
+      y: moveEvt.pageY - pickCoords.y
+    };
+
+    console.log(pickShift);
+
+    var newPosition = {
+      x: mainPin.offsetLeft - shift.x + pickShift.x,
+      y: mainPin.offsetTop - shift.y + pickShift.y
+    };
+
+    console.log(mainPin.offsetLeft);
+
     if (newPosition.y < 100) {
-      newPosition.y = 100;
+      newPosition.y = 100 + pickShift.y;
     } else if (newPosition.y > 500) {
-      newPosition.y = 500;
+      newPosition.y = 500 + pickShift.y;
     }
     mainPin.style.top = newPosition.y + 'px';
     mainPin.style.left = newPosition.x + 'px';
@@ -147,6 +174,8 @@
   var onMainPinMousedown = function (evt) {
     evt.preventDefault();
     var startCoords = getStartCoords(event);
+
+
 
     var onMouseMove = function (moveEvt) {
       moveEvt.preventDefault();
