@@ -1,38 +1,34 @@
 'use strict';
 (function () {
-  // форма въезда/выезда
+
+  var TIME_VALUES = ['12:00', '13:00', '14:00'];
+  var TYPE_VALUES = ['flat', 'bungalo', 'house', 'palace'];
+  var MIN_PRICE_VALUES = [1000, 0, 5000, 10000];
+  var ROOMS = ['1', '2', '3', '100'];
+  var GUESTS = ['1', '2', '3', '0'];
   var noticeForm = document.querySelector('.notice__form');
   var noticeFormFieldsets = noticeForm.querySelectorAll('fieldset');
+
+  // Функция синхронизации поля и значения
+  var syncValues = function (element, value) {
+    element.value = value;
+  };
+
+  // функция синхронизации поля и минимального значения
+  var syncValueWithMin = function (element, value) {
+    element.min = value;
+  };
+
+  // время въезда/ время выезда
   var timeIn = noticeForm.querySelector('#timein');
   var timeOut = noticeForm.querySelector('#timeout');
 
-  window.form = {
-    formEnable: function () {
-      noticeForm.classList.remove('notice__form--disabled');
-    },
-
-    inputsDisable: function (operator) {
-      for (var i = 0; i < noticeFormFieldsets.length; i++) {
-        noticeFormFieldsets[i].disabled = operator;
-      }
-    }
-  };
-
-  var selectTime = function (input1, input2) {
-    for (var i = 0; i < input1.options.length; i++) {
-      var option = input1.options[i];
-      if (option.selected) {
-        input2.options[i].selected = true;
-      }
-    }
-  };
-
   var OnTimeInChange = function () {
-    selectTime(timeIn, timeOut);
+    window.synchronizeFields(timeIn, timeOut, TIME_VALUES, TIME_VALUES, syncValues);
   };
 
   var onTimeOutChange = function () {
-    selectTime(timeOut, timeIn);
+    window.synchronizeFields(timeOut, timeIn, TIME_VALUES, TIME_VALUES, syncValues);
   };
 
   timeIn.addEventListener('change', OnTimeInChange);
@@ -42,20 +38,8 @@
   var houseType = noticeForm.querySelector('#type');
   var price = noticeForm.querySelector('#price');
 
-  var getMinPrice = function () {
-    if (houseType.value === 'flat') {
-      price.min = 1000;
-    } else if (houseType.value === 'house') {
-      price.min = 5000;
-    } else if (houseType.value === 'palace') {
-      price.min = 10000;
-    } else if (houseType.value === 'bungalo') {
-      price.min = 0;
-    }
-  };
-
   var OnHouseTypeChange = function () {
-    getMinPrice();
+    window.synchronizeFields(houseType, price, TYPE_VALUES, MIN_PRICE_VALUES, syncValueWithMin);
   };
 
   houseType.addEventListener('change', OnHouseTypeChange);
@@ -67,34 +51,24 @@
 
   var getCapacity = function () {
     var option = roomNumber.options[roomNumber.selectedIndex];
-    if (option.value === '1') {
-      capacity.options[0].disabled = true;
-      capacity.options[1].disabled = true;
-      capacity.options[3].disabled = true;
-      capacity.options[2].selected = true;
-      capacity.options[2].disabled = false;
-    } else if (option.value === '2') {
-      capacity.options[0].disabled = true;
-      capacity.options[1].disabled = false;
-      capacity.options[3].disabled = true;
-      capacity.options[2].selected = true;
-      capacity.options[2].disabled = false;
-    } else if (option.value === '3') {
-      capacity.options[0].disabled = false;
-      capacity.options[1].disabled = false;
-      capacity.options[3].disabled = true;
-      capacity.options[2].selected = true;
-      capacity.options[2].disabled = false;
-    } else if (option.value === '100') {
-      capacity.options[0].disabled = true;
-      capacity.options[1].disabled = true;
-      capacity.options[3].disabled = false;
-      capacity.options[3].selected = true;
-      capacity.options[2].disabled = true;
+    var roomValue = option.value;
+
+    for (var i = 0; i < roomNumber.options.length; i++) {
+      var capacityValue = capacity.options[i].value;
+      capacity.options[i].disabled = true;
+
+      if (roomValue === '100' && capacityValue === '0') {
+        capacity.options[3].disabled = false;
+      } else if (capacityValue <= roomValue && capacityValue > 0 && roomValue !== '100') {
+        capacity.options[i].disabled = false;
+      }
     }
   };
 
-  var onRoomNumberChange = getCapacity;
+  var onRoomNumberChange = function () {
+    window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
+    getCapacity();
+  };
 
   roomNumber.addEventListener('change', onRoomNumberChange);
   getCapacity();
@@ -119,4 +93,24 @@
   };
 
   submit.addEventListener('click', onSubmitClick);
+
+  window.form = {
+    formEnable: function () {
+      noticeForm.classList.remove('notice__form--disabled');
+    },
+
+    inputsDisable: function (operator) {
+      for (var i = 0; i < noticeFormFieldsets.length; i++) {
+        noticeFormFieldsets[i].disabled = operator;
+      }
+    },
+
+    synchronizeFields: function () {
+      window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
+      window.synchronizeFields(timeOut, timeIn, TIME_VALUES, TIME_VALUES, syncValues);
+      window.synchronizeFields(houseType, price, TYPE_VALUES, MIN_PRICE_VALUES, syncValueWithMin);
+      window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
+      getCapacity();
+    }
+  };
 })();
