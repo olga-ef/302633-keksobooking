@@ -9,8 +9,8 @@
   var mainPin = document.querySelector('.map__pin--main');
 
   // функсия вставляет карточку карточку
-  var insertCard = function (parentObject, nextObject, cardNumber) {
-    parentObject.insertBefore(window.renderMapCard(window.ads[cardNumber]), nextObject);
+  var insertCard = function (parentObject, nextObject, cardNumber, ads) {
+    parentObject.insertBefore(window.renderMapCard(ads[cardNumber]), nextObject);
   };
 
   // функция удаляет попап, если, он есть
@@ -36,30 +36,24 @@
     }
   };
 
+  // обработчик клика по крестику
   var onPopupCloseClick = function () {
     closePopup();
     window.pin.deactivatePin(event);
   };
 
   // открывает карточку
-  window.showCard = function (evt) {
+  window.showCard = function (evt, data) {
     var pinsList = mapPinsContainer.querySelectorAll('.map__pin');
     var target = evt.target;
     var btn = target.closest('button');
-    if (!btn) {
+    if (!btn || !mapPinsContainer.contains(btn) || btn === mainPin) {
       return;
     }
-    if (!mapPinsContainer.contains(btn)) {
-      return;
-    }
-    if (btn === mainPin) {
-      return;
-    }
-
     for (var i = 0; i < pinsList.length - 1; i++) {
       if (btn === pinsList[i + 1]) {
         removePopup();
-        insertCard(map, mapFiltersContainer, i);
+        insertCard(map, mapFiltersContainer, i, data);
         var popup = map.querySelector('.popup');
         var popupClose = popup.querySelector('.popup__close');
         popup.classList.remove('hidden');

@@ -3,17 +3,27 @@
 (function () {
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var mapPinsContainer = document.querySelector('.map__pins');
+
+  // функция генерации метки
+  var renderMapPin = function (object) {
+    var pinElement = mapPinTemplate.cloneNode(true);
+
+    pinElement.style.left = object.location.x + 'px';
+    pinElement.style.top = object.location.y + 'px';
+    pinElement.querySelector('img').src = object.author.avatar;
+
+    return pinElement;
+  };
+
   window.pin = {
 
-    // отрисовывает метки на карте
-    renderMapPin: function (object) {
-      var pinElement = mapPinTemplate.cloneNode(true);
-
-      pinElement.style.left = object.location.x + 'px';
-      pinElement.style.top = object.location.y + 'px';
-      pinElement.querySelector('img').src = object.author.avatar;
-
-      return pinElement;
+    // фунция отрисовывает метки
+    addMapPins: function (data) {
+      var fragment = document.createDocumentFragment();
+      for (var i = 0; i < data.length; i++) {
+        fragment.appendChild(renderMapPin(data[i]));
+      }
+      mapPinsContainer.appendChild(fragment);
     },
 
     // активирует метку

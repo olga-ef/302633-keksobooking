@@ -3,43 +3,39 @@
   var map = document.querySelector('.map');
   var mapPinsContainer = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
-  var fragment = document.createDocumentFragment();
-
-  // добавляет метки
-  for (var i = 0; i < window.ads.length; i++) {
-    fragment.appendChild(window.pin.renderMapPin(window.ads[i]));
-  }
-  var addMapPins = function () {
-    mapPinsContainer.appendChild(fragment);
-  };
 
   // удаляет затемнение с карты
   var removeFade = function () {
     map.classList.remove('map--faded');
   };
 
-  // Активирует стрницу при клике по главной метке
-  var onMainPinMouseup = function () {
-    removeFade();
-    addMapPins();
-    window.form.formEnable();
-    window.form.inputsDisable(false);
-    window.form.synchronizeFields();
+  var successHandler = function (data) {
+    // Активирует страницу при клике по главной метке
+    var onMainPinMouseup = function () {
+      removeFade();
+      window.pin.addMapPins(data);
+      window.form.formEnable();
+      window.form.inputsDisable(false);
+      window.form.synchronizeFields();
+      mainPin.removeEventListener('mouseup', onMainPinMouseup);
+    };
+
+    // обработчик клика по метке
+    var onPinClick = function () {
+      window.pin.deactivatePin(event);
+      window.pin.activatePin(event);
+      window.showCard(event, data);
+    };
+
+    mainPin.addEventListener('mouseup', onMainPinMouseup);
+    mapPinsContainer.addEventListener('click', onPinClick);
   };
 
-  // обработцик клика по метке
-  var onPinClick = function () {
-    window.pin.deactivatePin(event);
-    window.pin.activatePin(event);
-    window.showCard(event);
-  };
-
+  // Изначальное состояние
   window.form.inputsDisable(true);
-  mainPin.addEventListener('mouseup', onMainPinMouseup);
-  mapPinsContainer.addEventListener('click', onPinClick);
+  window.backend.load(successHandler, window.backend.errorHandler);
 
   // Перетаскивание метки
-
   var getStartCoords = function (evt) {
 
     return {
