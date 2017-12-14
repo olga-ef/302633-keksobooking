@@ -450,6 +450,15 @@ textarea:focus
     display: inline-block;
 
     vertical-align: middle;
+
+    margin-right: 5px;
+}
+
+.popup__pictures li img
+{
+  width: 40px;
+
+  height: 40px;
 }
 
 .popup__avatar

@@ -4,6 +4,24 @@
   // карточка
   var mapCardTemplate = document.querySelector('template').content.querySelector('article.map__card');
 
+  // функция, добавляющая фотографии
+
+  var addPhotos = function (element, object) {
+    var picturesList = element.querySelector('.popup__pictures');
+    var pictureContainer = element.querySelector('.popup__pictures li');
+
+    picturesList.removeChild(pictureContainer);
+
+    for (var i = 0; i < object.offer.photos.length; i++) {
+      var photoItem = document.createElement('li');
+      var photo = document.createElement('img');
+
+      picturesList.appendChild(photoItem);
+      photoItem.appendChild(photo);
+      photo.src = object.offer.photos[i];
+    }
+  };
+
   window.renderMapCard = function (object) {
     var cardElement = mapCardTemplate.cloneNode(true);
 
@@ -35,6 +53,8 @@
       features[i].classList.remove(features[i].classList[1]);
       features[i].classList.add('feature--' + object.offer.features[i]);
     }
+    addPhotos(cardElement, object);
+
     return cardElement;
   };
 })();
