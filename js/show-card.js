@@ -45,6 +45,8 @@
   // открывает карточку
   window.showCard = function (evt, data) {
     var pinsList = mapPinsContainer.querySelectorAll('.map__pin');
+
+
     var target = evt.target;
     var btn = target.closest('button');
     if (!btn || !mapPinsContainer.contains(btn) || btn === mainPin) {

@@ -3,6 +3,7 @@
 (function () {
   var mapPinTemplate = document.querySelector('template').content.querySelector('.map__pin');
   var mapPinsContainer = document.querySelector('.map__pins');
+  var pinNumber = 5;
 
   // функция генерации метки
   var renderMapPin = function (object) {
@@ -20,7 +21,7 @@
     // фунция отрисовывает метки
     addMapPins: function (data) {
       var fragment = document.createDocumentFragment();
-      for (var i = 0; i < data.length; i++) {
+      for (var i = 0; i < data.length && i < pinNumber; i++) {
         fragment.appendChild(renderMapPin(data[i]));
       }
       mapPinsContainer.appendChild(fragment);

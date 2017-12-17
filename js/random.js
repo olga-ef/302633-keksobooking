@@ -8,13 +8,11 @@
     },
 
     // случайное целое число в диапазоне
-
     getRandomInRange: function (min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     },
 
     // случайный неповторяющийся элемент массива
-
     getRandomElement: function (array) {
       var arrayCopy = array;
       var randomIndex = window.random.getRandomIndex(arrayCopy);
@@ -24,9 +22,20 @@
       return randomElement;
     },
 
-    // массив случайной длины
-
+    // перемешивает занчения в массиве случайным образом
     getRandomArray: function (array) {
+      var arrayCopy = array;
+      for (var i = arrayCopy.length - 1; i > 0; i--) {
+        var randomIndex = window.random.getRandomIndex(arrayCopy);
+        var randomElement = arrayCopy[randomIndex];
+        arrayCopy[randomIndex] = arrayCopy[i];
+        arrayCopy[i] = randomElement;
+      }
+      return arrayCopy;
+    },
+
+    // массив случайной длины
+    getRandomLengthArray: function (array) {
       var arrayCopy = array;
       for (var i = arrayCopy.length - 1; i > 0; i--) {
         var randomIndex = window.random.getRandomIndex(arrayCopy);

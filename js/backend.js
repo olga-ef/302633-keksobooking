@@ -3,6 +3,8 @@
 (function () {
   var URL_SAVE = 'https://1510.dump.academy/keksobooking';
   var URL_LOAD = 'https://1510.dump.academy/keksobooking/data';
+  var STATUS_OK = 200;
+  var TIMEOUT = 10000; // 10s
 
   var setXhr = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
@@ -10,7 +12,7 @@
 
     xhr.addEventListener('load', function () {
 
-      if (xhr.status === 200) {
+      if (xhr.status === STATUS_OK) {
         onLoad(xhr.response);
       } else {
         onError('Неизвестный статус ' + xhr.status + ' ' + xhr.status.text);
@@ -23,7 +25,7 @@
     xhr.addEventListener('timeout', function () {
       onError('Запрос не успел выполнится за ' + xhr.timeout + 'мс');
     });
-    xhr.timeout = 10000; // 10s
+    xhr.timeout = TIMEOUT;
 
     return xhr;
   };
