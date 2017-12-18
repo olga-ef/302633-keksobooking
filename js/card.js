@@ -6,54 +6,54 @@
 
   // функция, добавляющая фотографии
 
-  var addPhotos = function (element, object) {
+  var addPhotos = function (element, ad) {
     var picturesList = element.querySelector('.popup__pictures');
     var pictureContainer = element.querySelector('.popup__pictures li');
 
     picturesList.removeChild(pictureContainer);
 
-    for (var i = 0; i < object.offer.photos.length; i++) {
+    for (var i = 0; i < ad.offer.photos.length; i++) {
       var photoItem = document.createElement('li');
       var photo = document.createElement('img');
 
       picturesList.appendChild(photoItem);
       photoItem.appendChild(photo);
-      photo.src = object.offer.photos[i];
+      photo.src = ad.offer.photos[i];
     }
   };
 
-  window.renderMapCard = function (object) {
+  window.renderMapCard = function (ad) {
     var cardElement = mapCardTemplate.cloneNode(true);
 
-    cardElement.querySelector('h3').textContent = object.offer.title;
-    cardElement.querySelector('p small').textContent = object.offer.address;
-    cardElement.querySelector('.popup__price').textContent = object.offer.price + ' \u20bd/ночь';
+    cardElement.querySelector('h3').textContent = ad.offer.title;
+    cardElement.querySelector('p small').textContent = ad.offer.address;
+    cardElement.querySelector('.popup__price').textContent = ad.offer.price + ' \u20bd/ночь';
 
-    if (object.offer.type === 'flat') {
+    if (ad.offer.type === 'flat') {
       cardElement.querySelector('h4').textContent = 'Квартира';
     }
-    if (object.offer.type === 'bungalo') {
+    if (ad.offer.type === 'bungalo') {
       cardElement.querySelector('h4').textContent = 'Бунгало';
     } else {
       cardElement.querySelector('h4').textContent = 'Дом';
     }
 
-    cardElement.querySelectorAll('p')[2].textContent = object.offer.rooms + ' комнаты для ' + object.offer.guests + ' гостей';
-    cardElement.querySelectorAll('p')[3].textContent = 'Заезд после ' + object.offer.checkin + ', выезд до ' + object.offer.checkout;
-    cardElement.querySelectorAll('p')[4].textContent = object.offer.description;
-    cardElement.querySelector('.popup__avatar').src = object.author.avatar;
+    cardElement.querySelectorAll('p')[2].textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+    cardElement.querySelectorAll('p')[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
+    cardElement.querySelectorAll('p')[4].textContent = ad.offer.description;
+    cardElement.querySelector('.popup__avatar').src = ad.author.avatar;
 
     var featuresList = cardElement.querySelector('.popup__features');
     var features = cardElement.querySelector('.popup__features').querySelectorAll('.feature');
     for (var i = 0; i < features.length; i++) {
       featuresList.removeChild(features[i]);
     }
-    for (i = 0; i < object.offer.features.length; i++) {
+    for (i = 0; i < ad.offer.features.length; i++) {
       featuresList.appendChild(features[i]);
       features[i].classList.remove(features[i].classList[1]);
-      features[i].classList.add('feature--' + object.offer.features[i]);
+      features[i].classList.add('feature--' + ad.offer.features[i]);
     }
-    addPhotos(cardElement, object);
+    addPhotos(cardElement, ad);
 
     return cardElement;
   };

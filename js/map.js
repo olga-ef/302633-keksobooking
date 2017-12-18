@@ -8,11 +8,14 @@
   };
 
   var ENTER_KEYCODE = 13;
+  var UPDATE_INTERVAL = 500; // 0.5s
 
   var map = document.querySelector('.map');
   var mapPinsContainer = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var ads = [];
+  var lastTimeout;
+
   // фильтры
   var mapFilters = map.querySelector('.map__filters');
   var housingTypeFilter = mapFilters.querySelector('#housing-type');
@@ -35,14 +38,17 @@
   var updatePins = function () {
     var results = ads;
 
-    var filterTypes = function () {
-      if (housingTypeFilter.value !== 'any') {
+    // фильтр по значению
+    var filterByValue = function (filterValue, property) {
+      if (filterValue !== 'any') {
         results = results.filter(function (it) {
-          return it.offer.type === housingTypeFilter.value;
+          return it.offer[property].toString() === filterValue;
         });
       }
       return results;
     };
+
+    // фильтр по цене
     var filterPrices = function () {
       if (housingPriceFilter.value !== 'any') {
         results = results.filter(function (it) {
@@ -56,23 +62,8 @@
       }
       return results;
     };
-    var filterRooms = function () {
-      if (housingRoomsFilter.value !== 'any') {
-        results = results.filter(function (it) {
-          return it.offer.rooms.toString() === housingRoomsFilter.value;
-        });
-      }
-      return results;
-    };
-    var filterGuests = function () {
-      if (housingGuestsFilter.value !== 'any') {
-        results = results.filter(function (it) {
-          return it.offer.guests.toString() === housingGuestsFilter.value;
-        });
-      }
-      return results;
-    };
 
+    // фильтр по особенностям
     var filterFeatures = function () {
       housingFeatures.forEach(function (feature) {
         if (feature.checked) {
@@ -83,11 +74,12 @@
       });
       return results;
     };
+
     removePins();
-    filterTypes();
+    filterByValue(housingTypeFilter.value, 'type');
     filterPrices();
-    filterRooms();
-    filterGuests();
+    filterByValue(housingRoomsFilter.value, 'rooms');
+    filterByValue(housingGuestsFilter.value, 'guests');
     filterFeatures();
     window.pin.addMapPins(results);
 
@@ -101,7 +93,9 @@
   };
 
   // обработчик изменения значения фильтра
-  mapFilters.addEventListener('change', updatePins);
+  mapFilters.addEventListener('change', function () {
+    window.debounce(updatePins, UPDATE_INTERVAL);
+  });
 
   // удаляет затемнение с карты
   var removeFade = function () {
@@ -191,7 +185,7 @@
     var onMouseUp = function (upEvt) {
       upEvt.preventDefault();
       document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseUp', onMouseUp);
+      document.removeEventListener('mouseup', onMouseUp);
     };
 
     document.addEventListener('mousemove', onMouseMove);

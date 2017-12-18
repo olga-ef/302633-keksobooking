@@ -6,12 +6,12 @@
   var pinNumber = 5;
 
   // функция генерации метки
-  var renderMapPin = function (object) {
+  var renderMapPin = function (ad) {
     var pinElement = mapPinTemplate.cloneNode(true);
 
-    pinElement.style.left = object.location.x + 'px';
-    pinElement.style.top = object.location.y + 'px';
-    pinElement.querySelector('img').src = object.author.avatar;
+    pinElement.style.left = ad.location.x + 'px';
+    pinElement.style.top = ad.location.y + 'px';
+    pinElement.querySelector('img').src = ad.author.avatar;
 
     return pinElement;
   };
