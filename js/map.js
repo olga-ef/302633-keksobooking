@@ -14,7 +14,6 @@
   var mapPinsContainer = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var ads = [];
-  var lastTimeout;
 
   // фильтры
   var mapFilters = map.querySelector('.map__filters');
@@ -82,19 +81,11 @@
     filterByValue(housingGuestsFilter.value, 'guests');
     filterFeatures();
     window.pin.addMapPins(results);
-
-    // обработчик клика по метке
-    var onPinClick = function () {
-      window.pin.deactivatePin(event);
-      window.pin.activatePin(event);
-      window.showCard(event, results);
-    };
-    mapPinsContainer.addEventListener('click', onPinClick);
   };
 
   // обработчик изменения значения фильтра
   mapFilters.addEventListener('change', function () {
-    window.debounce(updatePins, UPDATE_INTERVAL);
+    window.util.debounce(updatePins, UPDATE_INTERVAL);
   });
 
   // удаляет затемнение с карты
@@ -103,13 +94,13 @@
   };
 
   var successHandler = function (data) {
-    ads = window.random.getRandomArray(data);
+    ads = window.util.getRandomArray(data);
   };
 
   // Активирует страницу при клике по главной метке
   var onMainPinMouseup = function () {
     removeFade();
-    updatePins();
+    window.pin.addMapPins(ads);
     window.form.formEnable();
     window.form.inputsDisable(false);
     window.form.synchronizeFields();
@@ -124,6 +115,15 @@
   };
 
   document.addEventListener('keydown', onMainPinEnterPress);
+
+  // обработчик клика по метке
+  var onPinClick = function () {
+    window.pin.deactivatePin(event);
+    window.pin.activatePin(event);
+    window.showCard(event);
+  };
+
+  mapPinsContainer.addEventListener('click', onPinClick);
 
   // Изначальное состояние
   window.form.inputsDisable(true);

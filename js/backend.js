@@ -30,29 +30,32 @@
     return xhr;
   };
 
+  var load = function (onLoad, onError) {
+    var xhr = setXhr(onLoad, onError);
+    xhr.open('GET', URL_LOAD);
+    xhr.send();
+  };
+
+  var save = function (data, onLoad, onError) {
+    var xhr = setXhr(onLoad, onError);
+    xhr.open('POST', URL_SAVE);
+    xhr.send(data);
+  };
+  var errorHandler = function (errorMessage) {
+    var errorWindow = document.createElement('div');
+    errorWindow.style = 'z-index: 100; margin: 0 auto; padding: 10px 0; text-align: center; background-color: #db3d15;';
+    errorWindow.style.position = 'fixed';
+    errorWindow.style.top = 0;
+    errorWindow.style.width = '100%';
+    errorWindow.style.fontSize = '20px';
+    errorWindow.style.color = '#fff';
+
+    errorWindow.textContent = errorMessage;
+    document.body.appendChild(errorWindow);
+  };
   window.backend = {
-    load: function (onLoad, onError) {
-      var xhr = setXhr(onLoad, onError);
-      xhr.open('GET', URL_LOAD);
-      xhr.send();
-    },
-
-    save: function (data, onLoad, onError) {
-      var xhr = setXhr(onLoad, onError);
-      xhr.open('POST', URL_SAVE);
-      xhr.send(data);
-    },
-    errorHandler: function (errorMessage) {
-      var errorWindow = document.createElement('div');
-      errorWindow.style = 'z-index: 100; margin: 0 auto; padding: 10px 0; text-align: center; background-color: #db3d15;';
-      errorWindow.style.position = 'fixed';
-      errorWindow.style.top = 0;
-      errorWindow.style.width = '100%';
-      errorWindow.style.fontSize = '20px';
-      errorWindow.style.color = '#fff';
-
-      errorWindow.textContent = errorMessage;
-      document.body.appendChild(errorWindow);
-    }
+    load: load,
+    save: save,
+    errorHandler: errorHandler
   };
 })();

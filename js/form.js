@@ -12,7 +12,14 @@
   var formTitle = noticeForm.querySelector('#title');
   var features = noticeForm.querySelectorAll('.features input');
   var description = noticeForm.querySelector('#description');
-
+  var timeIn = noticeForm.querySelector('#timein');
+  var timeOut = noticeForm.querySelector('#timeout');
+  var houseType = noticeForm.querySelector('#type');
+  var price = noticeForm.querySelector('#price');
+  var roomNumber = noticeForm.querySelector('#room_number');
+  var capacity = noticeForm.querySelector('#capacity');
+  var submit = noticeForm.querySelector('.form__submit');
+  var inputs = noticeForm.querySelectorAll('input');
 
   // Функция синхронизации поля и значения
   var syncValues = function (element, value) {
@@ -25,9 +32,6 @@
   };
 
   // время въезда/ время выезда
-  var timeIn = noticeForm.querySelector('#timein');
-  var timeOut = noticeForm.querySelector('#timeout');
-
   var OnTimeInChange = function () {
     window.synchronizeFields(timeIn, timeOut, TIME_VALUES, TIME_VALUES, syncValues);
   };
@@ -40,9 +44,6 @@
   timeOut.addEventListener('change', onTimeOutChange);
 
   // Тип жилья/цена
-  var houseType = noticeForm.querySelector('#type');
-  var price = noticeForm.querySelector('#price');
-
   var OnHouseTypeChange = function () {
     window.synchronizeFields(houseType, price, TYPE_VALUES, MIN_PRICE_VALUES, syncValueWithMin);
   };
@@ -50,10 +51,6 @@
   houseType.addEventListener('change', OnHouseTypeChange);
 
   // комнаты/гости
-
-  var roomNumber = noticeForm.querySelector('#room_number');
-  var capacity = noticeForm.querySelector('#capacity');
-
   var getCapacity = function () {
     var option = roomNumber.options[roomNumber.selectedIndex];
     var roomValue = option.value;
@@ -78,9 +75,6 @@
   roomNumber.addEventListener('change', onRoomNumberChange);
 
   // валидация
-  var submit = noticeForm.querySelector('.form__submit');
-  var inputs = noticeForm.querySelectorAll('input');
-
   var checkValidity = function () {
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
@@ -113,6 +107,24 @@
     description.value = '';
   };
 
+  var formEnable = function () {
+    noticeForm.classList.remove('notice__form--disabled');
+  };
+
+  var inputsDisable = function (operator) {
+    for (var i = 0; i < noticeFormFieldsets.length; i++) {
+      noticeFormFieldsets[i].disabled = operator;
+    }
+  };
+
+  var synchronizeFields = function () {
+    window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
+    window.synchronizeFields(timeOut, timeIn, TIME_VALUES, TIME_VALUES, syncValues);
+    window.synchronizeFields(houseType, price, TYPE_VALUES, MIN_PRICE_VALUES, syncValueWithMin);
+    window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
+    getCapacity();
+  };
+
   // обработчик отправки формы на сервер
   var onNoticeFormSubmit = function (evt) {
     evt.preventDefault();
@@ -123,20 +135,8 @@
   noticeForm.addEventListener('submit', onNoticeFormSubmit);
 
   window.form = {
-    formEnable: function () {
-      noticeForm.classList.remove('notice__form--disabled');
-    },
-    inputsDisable: function (operator) {
-      for (var i = 0; i < noticeFormFieldsets.length; i++) {
-        noticeFormFieldsets[i].disabled = operator;
-      }
-    },
-    synchronizeFields: function () {
-      window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
-      window.synchronizeFields(timeOut, timeIn, TIME_VALUES, TIME_VALUES, syncValues);
-      window.synchronizeFields(houseType, price, TYPE_VALUES, MIN_PRICE_VALUES, syncValueWithMin);
-      window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
-      getCapacity();
-    }
+    formEnable: formEnable,
+    inputsDisable: inputsDisable,
+    synchronizeFields: synchronizeFields
   };
 })();

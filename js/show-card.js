@@ -8,9 +8,9 @@
   var mapFiltersContainer = map.querySelector('.map__filters-container');
   var mainPin = document.querySelector('.map__pin--main');
 
-  // функсия вставляет карточку карточку
-  var insertCard = function (parentObject, nextObject, cardNumber, ads) {
-    parentObject.insertBefore(window.renderMapCard(ads[cardNumber]), nextObject);
+  // добавляет карточку на карту
+  var insertCard = function (parentObject, nextObject, card) {
+    parentObject.insertBefore(window.renderMapCard(card), nextObject);
   };
 
   // функция удаляет попап, если, он есть
@@ -43,19 +43,17 @@
   };
 
   // открывает карточку
-  window.showCard = function (evt, data) {
-    var pinsList = mapPinsContainer.querySelectorAll('.map__pin');
-
-
+  window.showCard = function (evt) {
     var target = evt.target;
     var btn = target.closest('button');
     if (!btn || !mapPinsContainer.contains(btn) || btn === mainPin) {
       return;
     }
-    for (var i = 0; i < pinsList.length - 1; i++) {
-      if (btn === pinsList[i + 1]) {
+
+    window.pin.cardsDataMap.forEach(function (it) {
+      if (btn === it.elem) {
         removePopup();
-        insertCard(map, mapFiltersContainer, i, data);
+        insertCard(map, mapFiltersContainer, it.obj);
         var popup = map.querySelector('.popup');
         var popupClose = popup.querySelector('.popup__close');
         popup.classList.remove('hidden');
@@ -63,6 +61,6 @@
         document.addEventListener('keydown', onPopupEscPress);
         return;
       }
-    }
+    });
   };
 })();
