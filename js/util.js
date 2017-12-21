@@ -2,6 +2,11 @@
 
 (function () {
 
+  var KeyboardKey = {
+    ENTER: 13,
+    ESC: 27
+  };
+
   var lastTimeout;
 
   // выполняет заданную функцию, через заданный интервал времени
@@ -34,9 +39,25 @@
     return arrayCopy;
   };
 
+  // выполняет указанную функцию при нажатии на esc
+  var isEscPress = function (evt, fn) {
+    if (evt.keyCode === KeyboardKey.ESC) {
+      fn();
+    }
+  };
+
+  // выполняет указанную функцию при нажатии на enter
+  var isEnterPress = function (evt, fn) {
+    if (evt.keyCode === KeyboardKey.ENTER) {
+      fn();
+    }
+  };
+
   window.util = {
     debounce: debounce,
     cleanArray: cleanArray,
-    getRandomArray: getRandomArray
+    getRandomArray: getRandomArray,
+    isEscPress: isEscPress,
+    isEnterPress: isEnterPress
   };
 })();

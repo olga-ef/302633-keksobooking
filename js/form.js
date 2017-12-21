@@ -20,6 +20,7 @@
   var capacity = noticeForm.querySelector('#capacity');
   var submit = noticeForm.querySelector('.form__submit');
   var inputs = noticeForm.querySelectorAll('input');
+  var resetButton = noticeForm.querySelector('.form__reset');
 
   // Функция синхронизации поля и значения
   var syncValues = function (element, value) {
@@ -40,15 +41,10 @@
     window.synchronizeFields(timeOut, timeIn, TIME_VALUES, TIME_VALUES, syncValues);
   };
 
-  timeIn.addEventListener('change', OnTimeInChange);
-  timeOut.addEventListener('change', onTimeOutChange);
-
   // Тип жилья/цена
   var OnHouseTypeChange = function () {
     window.synchronizeFields(houseType, price, TYPE_VALUES, MIN_PRICE_VALUES, syncValueWithMin);
   };
-
-  houseType.addEventListener('change', OnHouseTypeChange);
 
   // комнаты/гости
   var getCapacity = function () {
@@ -72,17 +68,40 @@
     getCapacity();
   };
 
-  roomNumber.addEventListener('change', onRoomNumberChange);
+  // валидация по заголовку
+  var onFormTitleInvalid = function () {
+    if (formTitle.validity.tooShort) {
+      formTitle.setCustomValidity('Минимальная длина заголовка — 30 символов');
+    } else if (formTitle.validity.tooLong) {
+      formTitle.setCustomValidity('Максимальная длина заголовка — 100 символов');
+    } else if (formTitle.validity.valueMissing) {
+      formTitle.setCustomValidity('Обязательное поле');
+    } else {
+      formTitle.setCustomValidity('');
+    }
+  };
 
-  // валидация
+  // валидация по цене
+  var onPriceInvalid = function () {
+    if (price.validity.rangeUnderflow) {
+      price.setCustomValidity('Минимальная цена - ' + price.min);
+    } else if (price.validity.rangeOverflow) {
+      price.setCustomValidity('Максимальная цена - ' + price.max);
+    } else if (price.validity.valueMissing) {
+      price.setCustomValidity('Обязательное поле');
+    } else {
+      price.setCustomValidity('');
+    }
+  };
+
+  // делает красной рамку неправильно заполненного поля
   var checkValidity = function () {
     for (var i = 0; i < inputs.length; i++) {
       var input = inputs[i];
       if (input.checkValidity() === false) {
         input.style.borderColor = '#fa9';
-      } else {
-        input.style.borderColor = '#d9d9d3';
       }
+      input.style.borderColor = '#d9d9d3';
     }
   };
 
@@ -90,10 +109,8 @@
     checkValidity();
   };
 
-  submit.addEventListener('click', onSubmitClick);
-
-  // функция возвращения формы в первоначальное состояние
-  var recetNoticeForm = function () {
+    // функция возвращения формы в первоначальное состояние
+  var resetNoticeForm = function () {
     formTitle.value = '';
     houseType.value = 'flat';
     price.value = '1000';
@@ -101,22 +118,30 @@
     timeOut.value = '12:00';
     roomNumber.value = '1';
     capacity.value = '1';
-    features.forEach(function (item) {
-      item.checked = false;
-    });
+
+    for (var i = 0; i < features.length; i++) {
+      features[i].checked = false;
+    }
     description.value = '';
   };
 
+  var onResetButtonClick = function () {
+    resetNoticeForm();
+  };
+
+  // активирует форму
   var formEnable = function () {
     noticeForm.classList.remove('notice__form--disabled');
   };
 
+  // блокирует все поля формы
   var inputsDisable = function (operator) {
     for (var i = 0; i < noticeFormFieldsets.length; i++) {
       noticeFormFieldsets[i].disabled = operator;
     }
   };
 
+  // синхронизирует все поля
   var synchronizeFields = function () {
     window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
     window.synchronizeFields(timeOut, timeIn, TIME_VALUES, TIME_VALUES, syncValues);
@@ -128,11 +153,19 @@
   // обработчик отправки формы на сервер
   var onNoticeFormSubmit = function (evt) {
     evt.preventDefault();
-    window.backend.save(new FormData(noticeForm), recetNoticeForm, window.backend.errorHandler);
+    window.backend.save(new FormData(noticeForm), resetNoticeForm, window.backend.errorHandler);
   };
 
-  // событие отправки формы на сервер
+  // обработчики
+  timeIn.addEventListener('change', OnTimeInChange);
+  timeOut.addEventListener('change', onTimeOutChange);
   noticeForm.addEventListener('submit', onNoticeFormSubmit);
+  houseType.addEventListener('change', OnHouseTypeChange);
+  roomNumber.addEventListener('change', onRoomNumberChange);
+  submit.addEventListener('click', onSubmitClick);
+  price.addEventListener('invalid', onPriceInvalid);
+  formTitle.addEventListener('invalid', onFormTitleInvalid);
+  resetButton.addEventListener('click', onResetButtonClick);
 
   window.form = {
     formEnable: formEnable,
