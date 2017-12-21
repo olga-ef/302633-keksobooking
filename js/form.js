@@ -6,6 +6,7 @@
   var MIN_PRICE_VALUES = [1000, 0, 5000, 10000];
   var ROOMS = ['1', '2', '3', '100'];
   var GUESTS = ['1', '2', '3', '0'];
+  var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
 
   var noticeForm = document.querySelector('.notice__form');
   var noticeFormFieldsets = noticeForm.querySelectorAll('fieldset');
@@ -21,6 +22,62 @@
   var submit = noticeForm.querySelector('.form__submit');
   var inputs = noticeForm.querySelectorAll('input');
   var resetButton = noticeForm.querySelector('.form__reset');
+  var avatarChooser = noticeForm.querySelector('#avatar');
+  var photoChooser = noticeForm.querySelector('#images');
+  var avatarPreview = noticeForm.querySelector('.notice__preview img');
+  var photosPreview = noticeForm.querySelector('.form__photo-container');
+
+  // загружает файлы
+  var loadImage = function (chooser, showImage) {
+    var files = chooser.files;
+
+    [].forEach.call(files, function (file) {
+      var fileName = file.name.toLowerCase();
+
+      var matches = FILE_TYPES.some(function (it) {
+        return fileName.endsWith(it);
+      });
+
+      if (matches) {
+        var reader = new FileReader();
+        reader.addEventListener('load', function () {
+          showImage(reader.result);
+        });
+        reader.readAsDataURL(file);
+      }
+    });
+  };
+
+  // показывает аватарку
+  var showAvatar = function (content) {
+    avatarPreview.src = content;
+  };
+
+  // показывает фоторгафии
+  var showPhoto = function (content) {
+    var photo = document.createElement('img');
+    photo.width = '50';
+    photo.style.marginRight = '5px';
+    photosPreview.appendChild(photo);
+    photo.src = content;
+  };
+
+  var onAvatarChooserChange = function () {
+    loadImage(avatarChooser, showAvatar);
+  };
+
+  var onPhotoChooserChange = function () {
+    loadImage(photoChooser, showPhoto);
+  };
+
+  // удаляет фотографии объектов
+  var resetImages = function () {
+    var images = photosPreview.querySelectorAll('img');
+
+    for (var i = 0; i < images.length; i++) {
+      photosPreview.removeChild(images[i]);
+    }
+  };
 
   // Функция синхронизации поля и значения
   var syncValues = function (element, value) {
@@ -118,6 +175,8 @@
     timeOut.value = '12:00';
     roomNumber.value = '1';
     capacity.value = '1';
+    resetImages();
+    avatarPreview.src = 'img/muffin.png';
 
     for (var i = 0; i < features.length; i++) {
       features[i].checked = false;
@@ -166,6 +225,8 @@
   price.addEventListener('invalid', onPriceInvalid);
   formTitle.addEventListener('invalid', onFormTitleInvalid);
   resetButton.addEventListener('click', onResetButtonClick);
+  avatarChooser.addEventListener('change', onAvatarChooserChange);
+  photoChooser.addEventListener('change', onPhotoChooserChange);
 
   window.form = {
     formEnable: formEnable,

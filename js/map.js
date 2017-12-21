@@ -117,11 +117,11 @@
     document.removeEventListener('keydown', onMainPinEnterPress);
   };
 
-  var onMainPinEnterPress = function (event) {
-    window.util.isEnterPress(event, onMainPinMouseup);
+  var onMainPinEnterPress = function (evt) {
+    window.util.isEnterPress(evt, onMainPinMouseup);
   };
 
-  document.addEventListener('keydown', onMainPinEnterPress);
+  mainPin.addEventListener('keydown', onMainPinEnterPress);
 
   // обработчик клика по метке
   var onPinClick = function (evt) {
