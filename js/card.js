@@ -10,7 +10,6 @@
   };
 
   // функция, добавляющая фотографии
-
   var addPhotos = function (element, ad) {
     var picturesList = element.querySelector('.popup__pictures');
     var pictureContainer = element.querySelector('.popup__pictures li');
@@ -27,13 +26,15 @@
     }
   };
 
+
+  // добавляет особенности
   var addFeatures = function (element, ad) {
     var featuresList = element.querySelector('.popup__features');
     var features = element.querySelector('.popup__features').querySelectorAll('.feature');
 
-    features.forEach(function (it) {
-      featuresList.removeChild(it);
-    });
+    for (var i = 0; i < features.length; i++) {
+      featuresList.removeChild(features[i]);
+    }
 
     ad.offer.features.forEach(function (featureItem, index) {
       featuresList.appendChild(features[index]);
@@ -49,8 +50,10 @@
     cardElement.querySelector('p small').textContent = ad.offer.address;
     cardElement.querySelector('.popup__price').textContent = ad.offer.price + ' \u20bd/ночь';
     cardElement.querySelector('h4').textContent = houseTypesMap[ad.offer.type];
-    cardElement.querySelectorAll('p')[2].textContent = ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
-    cardElement.querySelectorAll('p')[3].textContent = 'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
+    cardElement.querySelectorAll('p')[2].textContent =
+      ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
+    cardElement.querySelectorAll('p')[3].textContent =
+      'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
     cardElement.querySelectorAll('p')[4].textContent = ad.offer.description;
     cardElement.querySelector('.popup__avatar').src = ad.author.avatar;
     addFeatures(cardElement, ad);

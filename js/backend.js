@@ -41,6 +41,7 @@
     xhr.open('POST', URL_SAVE);
     xhr.send(data);
   };
+
   var errorHandler = function (errorMessage) {
     var errorWindow = document.createElement('div');
     errorWindow.style = 'z-index: 100; margin: 0 auto; padding: 10px 0; text-align: center; background-color: #db3d15;';
@@ -53,6 +54,7 @@
     errorWindow.textContent = errorMessage;
     document.body.appendChild(errorWindow);
   };
+
   window.backend = {
     load: load,
     save: save,
