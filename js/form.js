@@ -74,9 +74,9 @@
   var resetImages = function () {
     var images = photosPreview.querySelectorAll('img');
 
-    for (var i = 0; i < images.length; i++) {
-      photosPreview.removeChild(images[i]);
-    }
+    [].forEach.call(images, function (image) {
+      photosPreview.removeChild(image);
+    });
   };
 
   // Функция синхронизации поля и значения
@@ -90,7 +90,7 @@
   };
 
   // время въезда/ время выезда
-  var OnTimeInChange = function () {
+  var onTimeInChange = function () {
     window.synchronizeFields(timeIn, timeOut, TIME_VALUES, TIME_VALUES, syncValues);
   };
 
@@ -99,7 +99,7 @@
   };
 
   // Тип жилья/цена
-  var OnHouseTypeChange = function () {
+  var onHouseTypeChange = function () {
     window.synchronizeFields(houseType, price, TYPE_VALUES, MIN_PRICE_VALUES, syncValueWithMin);
   };
 
@@ -108,21 +108,29 @@
     var option = roomNumber.options[roomNumber.selectedIndex];
     var roomValue = option.value;
 
-    for (var i = 0; i < roomNumber.options.length; i++) {
-      var capacityValue = capacity.options[i].value;
-      capacity.options[i].disabled = true;
+    [].forEach.call(roomNumber.options, function (it, index) {
+      var capacityValue = capacity.options[index].value;
+      capacity.options[index].disabled = true;
 
       if (roomValue === '100' && capacityValue === '0') {
         capacity.options[3].disabled = false;
       } else if (capacityValue <= roomValue && capacityValue > 0 && roomValue !== '100') {
-        capacity.options[i].disabled = false;
+        capacity.options[index].disabled = false;
       }
-    }
+    });
   };
 
   var onRoomNumberChange = function () {
     window.synchronizeFields(roomNumber, capacity, ROOMS, GUESTS, syncValues);
     getCapacity();
+  };
+
+  var onInputInvalid = function (input) {
+    if (input.validity.valueMissing) {
+      input.setCustomValidity('Обязательное поле');
+    } else {
+      input.setCustomValidity('');
+    }
   };
 
   // валидация по заголовку
@@ -131,11 +139,8 @@
       formTitle.setCustomValidity('Минимальная длина заголовка — 30 символов');
     } else if (formTitle.validity.tooLong) {
       formTitle.setCustomValidity('Максимальная длина заголовка — 100 символов');
-    } else if (formTitle.validity.valueMissing) {
-      formTitle.setCustomValidity('Обязательное поле');
-    } else {
-      formTitle.setCustomValidity('');
     }
+    onInputInvalid(formTitle);
   };
 
   // валидация по цене
@@ -144,22 +149,18 @@
       price.setCustomValidity('Минимальная цена - ' + price.min);
     } else if (price.validity.rangeOverflow) {
       price.setCustomValidity('Максимальная цена - ' + price.max);
-    } else if (price.validity.valueMissing) {
-      price.setCustomValidity('Обязательное поле');
-    } else {
-      price.setCustomValidity('');
     }
+    onInputInvalid(price);
   };
 
   // делает красной рамку неправильно заполненного поля
   var checkValidity = function () {
-    for (var i = 0; i < inputs.length; i++) {
-      var input = inputs[i];
+    [].forEach.call(inputs, function (currentInput) {
+      var input = currentInput;
       if (input.checkValidity() === false) {
         input.style.borderColor = '#fa9';
       }
-      input.style.borderColor = '#d9d9d3';
-    }
+    });
   };
 
   var onSubmitClick = function () {
@@ -177,11 +178,15 @@
     capacity.value = '1';
     resetImages();
     avatarPreview.src = 'img/muffin.png';
-
-    for (var i = 0; i < features.length; i++) {
-      features[i].checked = false;
-    }
     description.value = '';
+
+    [].forEach.call(features, function (currentFeature) {
+      currentFeature.checked = false;
+    });
+
+    [].forEach.call(inputs, function (currentInput) {
+      currentInput.style.borderColor = '#d9d9d3';
+    });
   };
 
   var onResetButtonClick = function () {
@@ -189,7 +194,7 @@
   };
 
   // активирует форму
-  var formEnable = function () {
+  var enable = function () {
     noticeForm.classList.remove('notice__form--disabled');
   };
 
@@ -216,10 +221,10 @@
   };
 
   // обработчики
-  timeIn.addEventListener('change', OnTimeInChange);
+  timeIn.addEventListener('change', onTimeInChange);
   timeOut.addEventListener('change', onTimeOutChange);
   noticeForm.addEventListener('submit', onNoticeFormSubmit);
-  houseType.addEventListener('change', OnHouseTypeChange);
+  houseType.addEventListener('change', onHouseTypeChange);
   roomNumber.addEventListener('change', onRoomNumberChange);
   submit.addEventListener('click', onSubmitClick);
   price.addEventListener('invalid', onPriceInvalid);
@@ -229,7 +234,7 @@
   photoChooser.addEventListener('change', onPhotoChooserChange);
 
   window.form = {
-    formEnable: formEnable,
+    enable: enable,
     inputsDisable: inputsDisable,
     synchronizeFields: synchronizeFields
   };

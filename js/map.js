@@ -36,11 +36,11 @@
   var removePins = function () {
     var mapPins = mapPinsContainer.querySelectorAll('.map__pin');
 
-    for (var i = 0; i < mapPins.length; i++) {
-      if (mapPins[i] !== mainPin) {
-        mapPinsContainer.removeChild(mapPins[i]);
+    [].forEach.call(mapPins, function (currentPin) {
+      if (currentPin !== mainPin) {
+        mapPinsContainer.removeChild(currentPin);
       }
-    }
+    });
   };
   // функция обновления пинов
   var updatePins = function () {
@@ -73,13 +73,13 @@
 
     // фильтр по особенностям
     var filterFeatures = function () {
-      for (var i = 0; i < housingFeatures.length; i++) {
-        if (housingFeatures[i].checked) {
+      [].forEach.call(housingFeatures, function (currentFeature) {
+        if (currentFeature.checked) {
           results = results.filter(function (it) {
-            return it.offer.features.indexOf(housingFeatures[i].value) >= 0;
+            return it.offer.features.indexOf(currentFeature.value) >= 0;
           });
         }
-      }
+      });
       return results;
     };
 
@@ -110,7 +110,7 @@
   var onMainPinMouseup = function () {
     removeFade();
     updatePins();
-    window.form.formEnable();
+    window.form.enable();
     window.form.inputsDisable(false);
     window.form.synchronizeFields();
     mainPin.removeEventListener('mouseup', onMainPinMouseup);
@@ -129,8 +129,8 @@
     if (!clickedPin || !mapPinsContainer.contains(clickedPin) || clickedPin === mainPin) {
       return;
     }
-    window.pin.deactivatePin();
-    window.pin.activatePin(clickedPin);
+    window.pin.deactivate();
+    window.pin.activate(clickedPin);
     window.showCard(clickedPin);
   };
 

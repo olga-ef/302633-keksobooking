@@ -16,14 +16,14 @@
 
     picturesList.removeChild(pictureContainer);
 
-    for (var i = 0; i < ad.offer.photos.length; i++) {
+    ad.offer.photos.forEach(function (it) {
       var photoItem = document.createElement('li');
       var photo = document.createElement('img');
 
       picturesList.appendChild(photoItem);
       photoItem.appendChild(photo);
-      photo.src = ad.offer.photos[i];
-    }
+      photo.src = it;
+    });
   };
 
 
@@ -32,9 +32,9 @@
     var featuresList = element.querySelector('.popup__features');
     var features = element.querySelector('.popup__features').querySelectorAll('.feature');
 
-    for (var i = 0; i < features.length; i++) {
-      featuresList.removeChild(features[i]);
-    }
+    [].forEach.call(features, function (feature) {
+      featuresList.removeChild(feature);
+    });
 
     ad.offer.features.forEach(function (featureItem, index) {
       featuresList.appendChild(features[index]);
@@ -50,11 +50,11 @@
     cardElement.querySelector('p small').textContent = ad.offer.address;
     cardElement.querySelector('.popup__price').textContent = ad.offer.price + ' \u20bd/ночь';
     cardElement.querySelector('h4').textContent = houseTypesMap[ad.offer.type];
-    cardElement.querySelectorAll('p')[2].textContent =
+    cardElement.querySelector('h4 + p').textContent =
       ad.offer.rooms + ' комнаты для ' + ad.offer.guests + ' гостей';
-    cardElement.querySelectorAll('p')[3].textContent =
+    cardElement.querySelector('h4 + p + p').textContent =
       'Заезд после ' + ad.offer.checkin + ', выезд до ' + ad.offer.checkout;
-    cardElement.querySelectorAll('p')[4].textContent = ad.offer.description;
+    cardElement.querySelector('.popup__features + p').textContent = ad.offer.description;
     cardElement.querySelector('.popup__avatar').src = ad.author.avatar;
     addFeatures(cardElement, ad);
     addPhotos(cardElement, ad);

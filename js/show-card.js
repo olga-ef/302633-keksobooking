@@ -21,13 +21,13 @@
   // функкция закрывает попап
   var closePopup = function () {
     removePopup();
-    window.pin.deactivatePin();
+    window.pin.deactivate();
     document.removeEventListener('keydown', onPopupEscPress);
   };
 
   // функция закрывает попап при нажатии esc
-  var onPopupEscPress = function (event) {
-    window.util.isEscPress(event, closePopup);
+  var onPopupEscPress = function (evt) {
+    window.util.isEscPress(evt, closePopup);
   };
 
   // обработчик клика по крестику

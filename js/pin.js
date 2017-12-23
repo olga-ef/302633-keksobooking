@@ -26,7 +26,7 @@
     var fragment = document.createDocumentFragment();
     var pins;
     window.util.cleanArray(cardsDataMap);
-    for (var i = 0; i < data.length && i < PINS_NUMBER; i++) {
+    for (var i = 0; i < Math.min(data.length, PINS_NUMBER); i++) {
       fragment.appendChild(renderMapPin(data[i]));
       pins = fragment.querySelectorAll('.map__pin');
       cardsDataMap.push({
@@ -38,23 +38,22 @@
   };
 
   // активирует метку
-  var activatePin = function (clickedPin) {
+  var activate = function (clickedPin) {
     clickedPin.classList.add('map__pin--active');
   };
 
   // убирает подсветку метки
-  var deactivatePin = function () {
-    var pinsList = mapPinsContainer.querySelectorAll('.map__pin');
-
-    for (var i = 0; i < pinsList.length; i++) {
-      pinsList[i].classList.remove('map__pin--active');
+  var deactivate = function () {
+    var activePin = mapPinsContainer.querySelector('.map__pin--active');
+    if (activePin) {
+      activePin.classList.remove('map__pin--active');
     }
   };
 
   window.pin = {
     cardsDataMap: cardsDataMap,
     addMapPins: addMapPins,
-    activatePin: activatePin,
-    deactivatePin: deactivatePin
+    activate: activate,
+    deactivate: deactivate
   };
 })();
