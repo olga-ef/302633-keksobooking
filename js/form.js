@@ -7,6 +7,18 @@
   var ROOMS = ['1', '2', '3', '100'];
   var GUESTS = ['1', '2', '3', '0'];
   var FILE_TYPES = ['gif', 'jpg', 'jpeg', 'png'];
+  var ROOMS_MAX = '100';
+  var GUESTS_MIN = '0';
+  var ERROR_COLOR = '#fa9';
+  var BORDER_COLOR = '#d9d9d3';
+  var DEFAULT_TITLE = '';
+  var DEFAULT_TYPE = 'flat';
+  var DEFAULT_TIME = '12:00';
+  var DEFAULT_PRICE = '1000';
+  var DEFAULT_ROOMS_NUMBER = '1';
+  var DEFAULT_CAPACITY = '1';
+  var DEFAULT_DESCRIPTION = '';
+  var DEFAULT_AVATAR = 'img/muffin.png';
 
   var noticeForm = document.querySelector('.notice__form');
   var noticeFormFieldsets = noticeForm.querySelectorAll('fieldset');
@@ -112,9 +124,9 @@
       var capacityValue = capacity.options[index].value;
       capacity.options[index].disabled = true;
 
-      if (roomValue === '100' && capacityValue === '0') {
+      if (roomValue === ROOMS_MAX && capacityValue === GUESTS_MIN) {
         capacity.options[3].disabled = false;
-      } else if (capacityValue <= roomValue && capacityValue > 0 && roomValue !== '100') {
+      } else if (capacityValue <= roomValue && capacityValue > GUESTS_MIN && roomValue !== ROOMS_MAX) {
         capacity.options[index].disabled = false;
       }
     });
@@ -158,7 +170,7 @@
     [].forEach.call(inputs, function (currentInput) {
       var input = currentInput;
       if (input.checkValidity() === false) {
-        input.style.borderColor = '#fa9';
+        input.style.borderColor = ERROR_COLOR;
       }
     });
   };
@@ -169,23 +181,23 @@
 
     // функция возвращения формы в первоначальное состояние
   var resetNoticeForm = function () {
-    formTitle.value = '';
-    houseType.value = 'flat';
-    price.value = '1000';
-    timeIn.value = '12:00';
-    timeOut.value = '12:00';
-    roomNumber.value = '1';
-    capacity.value = '1';
+    formTitle.value = DEFAULT_TITLE;
+    houseType.value = DEFAULT_TYPE;
+    price.value = DEFAULT_PRICE;
+    timeIn.value = DEFAULT_TIME;
+    timeOut.value = DEFAULT_TIME;
+    roomNumber.value = DEFAULT_ROOMS_NUMBER;
+    capacity.value = DEFAULT_CAPACITY;
     resetImages();
-    avatarPreview.src = 'img/muffin.png';
-    description.value = '';
+    avatarPreview.src = DEFAULT_AVATAR;
+    description.value = DEFAULT_DESCRIPTION;
 
     [].forEach.call(features, function (currentFeature) {
       currentFeature.checked = false;
     });
 
     [].forEach.call(inputs, function (currentInput) {
-      currentInput.style.borderColor = '#d9d9d3';
+      currentInput.style.borderColor = BORDER_COLOR;
     });
   };
 
@@ -200,9 +212,9 @@
 
   // блокирует все поля формы
   var inputsDisable = function (operator) {
-    for (var i = 0; i < noticeFormFieldsets.length; i++) {
-      noticeFormFieldsets[i].disabled = operator;
-    }
+    [].forEach.call(noticeFormFieldsets, function (it) {
+      it.disabled = operator;
+    });
   };
 
   // синхронизирует все поля
